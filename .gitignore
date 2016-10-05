@@ -8,6 +8,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 flask/
+app.db
 bin/
 build/
 develop-eggs/
