@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Amateure - {{ amateur.name }}</title>
+  </head>
+  <body>
+    <h1>{{ amateur.name }}</h1>
+    <table>
+      <tr><td>ID</td><td>{{ amateur.id }}</td></tr>
+      {% if amateur.twitter %}<tr><td>ID</td><td>{{ amateur.twitter }}</td></tr>{% endif %}
+      {% if amateur.mdhId %}<tr><td>MyDirtyHobby</td><td><a href="{{ amateur.getMdhLink() }}">{{ amateur.mdhId }}</a></td></tr>{% endif %}
+      {% if amateur.vxId %}<tr><td>Visit-X</td><td>{{ amateur.vxId }}</td></tr>{% endif %}
+      {% if amateur.subDomain %}<tr><td>Subdomain</td><td><a href="http://{{ amateur.subDomain }}.deutsche-amateure.eu">http://{{ amateur.subDomain }}.deutsche-amateure.eu</a></td></tr>{% endif %}
+    </table>
+    {% if mdhDetails %}
+    <h2>MyDirtyHobby Details</h2>
+    {% for i in mdhDetails.get("items")[0].get("images").values() %}
+      <img src="{{ i }}" />
+    {% endfor %}
+    {% endif %}
+  </body>
+</html>
