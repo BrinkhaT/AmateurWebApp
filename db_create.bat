@@ -1,0 +1,1 @@
+flask\Scripts\python.exe db_create.py
