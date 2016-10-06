@@ -1,9 +1,14 @@
 from flask import Flask
+from flask_apscheduler import APScheduler
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 from app import views, models
 
