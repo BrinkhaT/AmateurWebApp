@@ -1,21 +1,25 @@
-<html>
-  <head>
-    <title>Amateure - {{ amateur.name }}</title>
-  </head>
-  <body>
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+    {% include 'flash.html' %}
+  <div class="well well-large">
     <h1>{{ amateur.name }}</h1>
-    <table>
+    <table class="table table-striped"> 
       <tr><td>ID</td><td>{{ amateur.id }}</td></tr>
-      {% if amateur.twitter %}<tr><td>ID</td><td>{{ amateur.twitter }}</td></tr>{% endif %}
-      {% if amateur.mdhId %}<tr><td>MyDirtyHobby</td><td><a href="{{ amateur.getMdhLink() }}">{{ amateur.mdhId }}</a></td></tr>{% endif %}
-      {% if amateur.vxId %}<tr><td>Visit-X</td><td>{{ amateur.vxId }}</td></tr>{% endif %}
-      {% if amateur.subDomain %}<tr><td>Subdomain</td><td><a href="http://{{ amateur.subDomain }}.deutsche-amateure.eu">http://{{ amateur.subDomain }}.deutsche-amateure.eu</a></td></tr>{% endif %}
+      <tr><td>Name</td><td>{{ amateur.name }}</td></tr>
+      <tr><td>Twitter</td><td>{{ amateur.tw }} ({{ amateur.twDetail }})</td></tr>
+      <tr><td>MDH ID</td><td>{{ amateur.mdhId }} ({{ amateur.mdhDetail }})</td></tr>
+      <tr><td>Visit-X ID</td><td>{{ amateur.vxId }} ({{ amateur.vxDetail }})</td></tr>
+      <tr><td>PornMe ID</td><td>{{ amateur.pmId }} ({{ amateur.pmDetail }})</td></tr>
+      <tr><td>SubDomain</td><td>{{ amateur.subDomain }}</td></tr>
+      <tr><td><a href="{{ url_for("editAmateur", id=amateur.id) }}">Edit</a></td></td></td></tr>
     </table>
     {% if mdhDetails %}
-    <h2>MyDirtyHobby Details</h2>
-    {% for i in mdhDetails.get("items")[0].get("images").values() %}
-      <img src="{{ i }}" />
-    {% endfor %}
+      <h2>MyDirtyHobby Details</h2>
+      {% for i in mdhDetails.get("items")[0].get("images").values() %}
+        <img src="{{ i }}" />
+      {% endfor %}
     {% endif %}
-  </body>
-</html>
+  </div>
+{% endblock %}

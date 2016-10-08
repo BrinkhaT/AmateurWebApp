@@ -1,0 +1,56 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+    {% include 'flash.html' %}
+	<div class="well well-large">
+		<h2>unveröffentlichte Re-Tweets</h2>
+		<table class="table table-striped"> 
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Twitter Owner</th>
+					<th>Twitter Text</th>
+					<th>Config</th>
+					<th>Retweeted</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for t in tSet %}
+				<tr>
+					<td>{{ t.id }}</td>
+					<td>{{ t.tweetOwner }}</td>
+					<td>{{ t.tweetText }}</td>
+					<td>{{ t.twConfig }}</td>
+					<td>{{ t.retweeted }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<div class="well well-large">
+		<h2>Twitter Follower</h2>
+		<table class="table table-striped"> 
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Twitter Name</th>
+					<th>Twitter App</th>
+					<th>zuletzt aktualisiert</th>
+					<th>letzte Tweet ID</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for f in fSet %}
+				<tr>
+					<td>{{ f.id }}</td>
+					<td>{{ f.twName }}</td>
+					<td>{{ f.twConfig }}</td>
+					<td>{{ f.lastChecked }}</td>
+					<td>{{ f.twLastId }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

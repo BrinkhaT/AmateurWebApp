@@ -1,0 +1,27 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+    {% include 'flash.html' %}
+	<div class="well well-large">
+		<h1>Vorhandene Twitter Accounts</h1>
+		<table class="table table-striped"> 
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Twitter ID</th>
+					<th>Twitter Name</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for twAccount in twAccounts %}
+				<tr>
+					<td>{{ twAccount.id }}</td>
+					<td>{{ twAccount.twId }}</td>
+					<td>{{ twAccount.twName }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}
