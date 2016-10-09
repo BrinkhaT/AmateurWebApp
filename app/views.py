@@ -101,3 +101,20 @@ def editAmateur(id):
 		form.pmId.data = a.pmId
 		form.subDomain.data = a.subDomain
 	return render_template('editAmateur.html', form=form, amateur=a)
+	
+# Routen fuer das Starten der Jobs
+@app.route('/jobs')
+def jobs():
+	return render_template('jobs.html')
+
+@app.route('/jobCheckFollowerForUpdates')
+def jobCheckFollowerForUpdates():
+	tasks.checkFollowerForUpdates()
+	flash('Job checkFollowerForUpdates abgeschlossen')
+	return redirect(url_for("index"))
+	
+@app.route('/jobRetweetAndDeleteTweets')
+def jobRetweetAndDeleteTweets():
+	tasks.retweetAndDeleteTweets()
+	flash('Job retweetAndDeleteTweets abgeschlossen')
+	return redirect(url_for("index"))
