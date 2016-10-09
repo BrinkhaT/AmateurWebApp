@@ -14,7 +14,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 import logging
 from logging.handlers import RotatingFileHandler
 logging.basicConfig()
-file_handler = RotatingFileHandler(os.path.join(basedir, 'logs/webapp.log'), 'a', 1 * 1024 * 1024, 10)
+file_handler = RotatingFileHandler(os.path.join(basedir, '../logs/webapp.log'), 'a', 1 * 1024 * 1024, 10)
 #file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
 file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
 app.logger.setLevel(logging.INFO)
