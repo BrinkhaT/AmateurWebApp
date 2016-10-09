@@ -29,6 +29,35 @@ def amateur(id):
 		resp = requests.get("http://www.mydirtyhobby.com/api/amateurs/?naff=83d6AmAU&amateurId="+amateur.mdhId).json()
 	return render_template("amateur.html", amateur=amateur, mdhDetails=resp)
 
+@app.route('/createAmateur', methods=['GET', 'POST'])
+def createAmateur():
+	form = EditAmateurForm()
+	
+	if form.validate_on_submit():
+		a = models.Amateur(name=form.name.data)
+		if(form.tw.data != ''):
+			a.tw = form.tw.data
+			t = models.TwitterFollower(twName=form.tw.data, twConfig=2)
+			db.session.add(t)
+
+		if(form.vxId.data != ''):
+			a.vxId = form.vxId.data
+
+		if(form.mdhId.data != ''):
+			a.mdhId = form.mdhId.data
+
+		if(form.pmId.data != ''):
+			a.pmId = form.pmId.data
+
+		if(form.subDomain.data != ''):
+			a.subDomain = form.subDomain.data
+			
+		db.session.add(a)
+		db.session.commit()
+		flash('Der Eintrag wurde erstellt')
+		return redirect(url_for("amateurs"))
+	return render_template('createAmateur.html', form=form)
+	
 @app.route('/editAmateur/<id>', methods=['GET', 'POST'])
 def editAmateur(id):
 	form = EditAmateurForm()
@@ -59,15 +88,6 @@ def editAmateur(id):
 			a.subDomain = form.subDomain.data
 		else:
 			a.subDomain = None
-
-		a.invalidateFields()
-
-		app.logger.info("form.tw: " + str(form.tw))
-		app.logger.info("form.tw.data: " + str(form.tw.data))
-		app.logger.info("a.tw: " + str(a.tw))
-		app.logger.info("form.pmId: " + str(form.pmId))
-		app.logger.info("form.pmId.data: " + str(form.pmId.data))
-		app.logger.info("a.pmId: " + str(a.pmId))
 
 		db.session.add(a)
 		db.session.commit()
