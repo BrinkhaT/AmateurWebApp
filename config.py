@@ -14,13 +14,13 @@ JOBS = [
             'func': 'app.tasks:checkFollowerForUpdates',
             'args': None,
             'trigger': 'interval',
-            'minutes': 5
+            'hours': 1
         },
         {
             'id': 'job_retweetAndDeleteTweets',
             'func': 'app.tasks:retweetAndDeleteTweets',
             'args': None,
             'trigger': 'interval',
-            'minutes': 3
+            'minutes': 5
         }
     ]
