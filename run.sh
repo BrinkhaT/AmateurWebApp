@@ -1,3 +1,4 @@
 #!/bin/sh
 
-flask/bin/python run.py
+BASEDIR=$(dirname $0)
+$BASEDIR/flask/bin/python $BASEDIR/run.py
