@@ -1,4 +1,4 @@
-#!flask/bin/python
+#!/home/pi/AmateurWebApp/flask/bin/python
 from app import app, tasks
 from flask_apscheduler import APScheduler
 
