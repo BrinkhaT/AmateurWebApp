@@ -11,7 +11,7 @@ def checkFollowerForUpdates():
 		for f in db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twConfig == acc.id).order_by(models.TwitterFollower.lastChecked).limit(10).all():
 			app.logger.info("checkFollowerForUpdates: Start Users %r" % (f))
 
-			sSet = None
+			sSet = []
 			if f.lastChecked == None or f.twLastId == None:
 				sSet = wrapper.getStatusForUserLimited(f.twName, 3)
 			else:
