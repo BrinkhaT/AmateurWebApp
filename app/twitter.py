@@ -41,7 +41,7 @@ class TwitterHelper:
 			self.initiateApi()
 		
 		try:
-			get_user(self.api.screen_name)
+			self.api.get_user(screen_name)
 			return True
 		except:
 			app.logger.error('Es ist ein Fehler bei der Pruefung des Twitter Nutzers %r aufgetreten' % (screen_name))
