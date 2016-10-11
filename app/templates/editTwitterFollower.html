@@ -1,0 +1,17 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+   {% include 'flash.html' %}
+  <div class="well well-large">
+    <h1>Twitter Follower bearbeiten</h1>
+    <form action="" method="post" name="editTwitterFollower">
+      {{form.hidden_tag()}}
+      <table class="table table-striped"> 
+        <tr><td>Twitter User</td><td>{{ form.twName(size=15) }}</td></tr>
+        <tr><td>Twitter Account</td><td>{{ form.twConfig() }}</td></tr>
+        <tr><td></td><td><input type="submit" value="Speichern"></td></tr>
+      </table>
+    </form>
+  </div>
+{% endblock %}

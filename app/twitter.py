@@ -49,11 +49,17 @@ class TwitterHelper:
 		return True
 
 	def getRateLimitStatus(self):
-		return self.api.rate_limit_status()
+		try:
+			return self.api.rate_limit_status()
+		except tweepy.TweepError as e:
+			app.logger.error('Fehler Auslesen der Limits: %s (Code: %s)' % (e[0][0]['message'], e[0][0]['code']))
+			return None
 
 	def checkRateLimitForUserTimeline(self):
 		status = self.getRateLimitStatus()
-		if status['resources']['statuses']['/statuses/user_timeline']['remaining'] > 0:
+		if status == None:
+			return False
+		elif status['resources']['statuses']['/statuses/user_timeline']['remaining'] > 0:
 			return True
 		return False
 		

@@ -12,7 +12,6 @@
 					<th>Twitter Owner</th>
 					<th>Twitter Text</th>
 					<th>Config</th>
-					<th>Retweeted</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -22,7 +21,6 @@
 					<td>{{ t.tweetOwner }}</td>
 					<td>{{ t.tweetText }}</td>
 					<td>{{ t.twConfig }}</td>
-					<td>{{ t.retweeted }}</td>
 				</tr>
 			{% endfor %}
 			</tbody>
@@ -52,5 +50,6 @@
 			{% endfor %}
 			</tbody>
 		</table>
+		<p><a href="{{ url_for('tweetsToRetweet') }}">Alle offenen Tweets</a></p>
 	</div>
 {% endblock %}

@@ -14,6 +14,7 @@
 				  <th>MDH ID</th>
 				  <th>Visit-X ID</th>
 				  <th>PM ID</th>
+				  <th>Edit</th>
 				</tr>
 			  </thead>
 			<tbody>
@@ -24,6 +25,7 @@
 				  <td>{{ amateur.mdhId }}</td>
 				  <td>{{ amateur.vxId }}</td>
 				  <td>{{ amateur.pmId }}</td>
+				  <td><a href="{{ url_for("editAmateur", amateurId=amateur.id) }}">Edit</a> | <a href="{{ url_for("deleteAmateur", amateurId=amateur.id) }}">Delete</a></td>
 				</tr>
 			{% endfor %}
 			</tbody>

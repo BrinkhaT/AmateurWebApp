@@ -1,0 +1,36 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+  {% include 'flash.html' %}
+  <div class="well well-large">
+    <h1>Twitter Follower</h1>
+    <p><a href="{{ url_for('createTwitterFollower') }}">Neuen Twitter Follower anlegen</a></p>
+    <table class="table table-striped"> 
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Twitter Name</th>
+				<th>Twitter App</th>
+				<th>zuletzt aktualisiert</th>
+				<th>letzte Tweet ID</th>
+				<th>Changes</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for f in fSet.items %}
+			<tr>
+				<td>{{ f.id }}</td>
+				<td>{{ f.twName }}</td>
+				<td>{{ f.twConfig }}</td>
+				<td>{{ f.lastChecked }}</td>
+				<td>{{ f.twLastId }}</td>
+				<td><a href="{{ url_for("editTwitterFollower", followerId=f.id) }}">Edit</a> | <a href="{{ url_for("deleteTwitterFollower", followerId=f.id) }}">Delete</a></td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+	{% if fSet.has_prev %}<a href="{{ url_for('twitterFollower', page=fSet.prev_num) }}">&lt;&lt; Newer posts</a>{% else %}&lt;&lt; Newer posts{% endif %} | 
+	{% if fSet.has_next %}<a href="{{ url_for('twitterFollower', page=fSet.next_num) }}">Older posts &gt;&gt;</a>{% else %}Older posts &gt;&gt;{% endif %}
+  </div>
+{% endblock %}

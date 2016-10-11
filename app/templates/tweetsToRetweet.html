@@ -1,0 +1,31 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+  {% include 'flash.html' %}
+  <div class="well well-large">
+    <h1>Noch offene Retweets</h1>
+    <table class="table table-striped"> 
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Twitter Owner</th>
+				<th>Twitter Text</th>
+				<th>Config</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for t in tSet.items %}
+			<tr>
+				<td>{{ t.id }}</td>
+				<td>{{ t.tweetOwner }}</td>
+				<td>{{ t.tweetText }}</td>
+				<td>{{ t.twConfig }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+	{% if tSet.has_prev %}<a href="{{ url_for('tweetsToRetweet', page=tSet.prev_num) }}">&lt;&lt; Newer posts</a>{% else %}&lt;&lt; Newer posts{% endif %} | 
+	{% if tSet.has_next %}<a href="{{ url_for('tweetsToRetweet', page=tSet.next_num) }}">Older posts &gt;&gt;</a>{% else %}Older posts &gt;&gt;{% endif %}
+  </div>
+{% endblock %}
