@@ -13,18 +13,39 @@ class TwitterHelper:
 	def initiateApi(self):
 		auth = tweepy.OAuthHandler(self.consKey, self.consSecret)
 		auth.set_access_token(self.accessToken, self.accessSecret)
-		self.api = tweepy.API(auth)
+		
+		try:
+			self.api = tweepy.API(auth)
+		except tweepy.TweepError as e:
+			app.logger.error('Fehler beim Verbinden zu Twitter: %s (Code: %s)' % (e[0][0]['message'], e[0][0]['code']))
+			return False
+			
+		return True
 
 	def retweet(self, statusId):
 		if self.api == None:
-			self.initiateApi()
-		self.api.retweet(statusId)
+			if self.initiateApi() == False:
+				return False
+			
+		try:
+			self.api.retweet(statusId)
+		except tweepy.TweepError as e:
+			app.logger.error('Fehler beim Retweeten: %s (Code: %s)' % (e[0][0]['message'], e[0][0]['code']))
+			return False
+		
 		return True
 
 	def updateStatus(self, text):
 		if self.api == None:
-			self.initiateApi()
-		self.api.update_status(status=text)
+			if self.initiateApi() == False:
+				return False
+			
+		try:
+			self.api.update_status(status=text)
+		except tweepy.TweepError as e:
+			app.logger.error('Fehler beim Statusupdate: %s (Code: %s)' % (e[0][0]['message'], e[0][0]['code']))
+			return False
+		
 		return True
 
 	def getRateLimitStatus(self):
@@ -38,18 +59,27 @@ class TwitterHelper:
 		
 	def validateUser(self, screen_name):
 		if self.api == None:
-			self.initiateApi()
+			if self.initiateApi() == False:
+				return False
 		
 		try:
-			self.api.get_user(screen_name)
-			return True
-		except:
-			app.logger.error('Es ist ein Fehler bei der Pruefung des Twitter Nutzers %r aufgetreten' % (screen_name))
-		return False
+			self.api.get_user(screen_name=screen_name)
+		except  tweepy.TweepError as e:
+			app.logger.error('Der bei Abruf des Twitter-Nutzers %r: %s (Code: %s)' % (screen_name, e[0][0]['message'], e[0][0]['code']))
+			return False
+		
+		try:
+			self.api.user_timeline(screen_name=screen_name, count=1)
+		except tweepy.TweepError as e: 
+			app.logger.error('Fehler beim Abruf der Tweets von Nutzer %s: %s (Code: %s)' % (screen_name, e[0][0]['message'], e[0][0]['code']))
+			return False
+		
+		return True
 
 	def getStatusForUserLimited(self, screen_name, limit):
 		if self.api == None:
-			self.initiateApi()
+			if self.initiateApi() == False:
+				return False
 		
 		if self.checkRateLimitForUserTimeline() and self.validateUser(screen_name):
 			return tweepy.Cursor(self.api.user_timeline, screen_name=screen_name).items(limit)
@@ -57,7 +87,8 @@ class TwitterHelper:
 
 	def getStatusForUserSinceLastUpdate(self, screen_name, since_id):
 		if self.api == None:
-			self.initiateApi()
+			if self.initiateApi() == False:
+				return False
 			
 		if self.checkRateLimitForUserTimeline() and self.validateUser(screen_name):
 			return tweepy.Cursor(self.api.user_timeline, screen_name=screen_name, since_id=since_id).items()
