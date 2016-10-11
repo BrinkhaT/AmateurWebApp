@@ -1,6 +1,4 @@
 from app import db
-import requests
-import json
 
 class Amateur(db.Model):
     __tablename__ = "amateure"

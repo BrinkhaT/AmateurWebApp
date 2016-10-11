@@ -13,13 +13,7 @@
       <tr><td>Visit-X ID</td><td>{{ amateur.vxId }} ({{ amateur.vxDetail }})</td></tr>
       <tr><td>PornMe ID</td><td>{{ amateur.pmId }} ({{ amateur.pmDetail }})</td></tr>
       <tr><td>SubDomain</td><td>{{ amateur.subDomain }}</td></tr>
-      <tr><td><a href="{{ url_for("editAmateur", id=amateur.id) }}">Edit</a></td></td></td></tr>
+      <tr><td><a href="{{ url_for("editAmateur", amateurId=amateur.id) }}">Edit</a></td></td></td></tr>
     </table>
-    {% if mdhDetails %}
-      <h2>MyDirtyHobby Details</h2>
-      {% for i in mdhDetails.get("items")[0].get("images").values() %}
-        <img src="{{ i }}" />
-      {% endfor %}
-    {% endif %}
   </div>
 {% endblock %}

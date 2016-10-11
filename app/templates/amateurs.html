@@ -19,7 +19,7 @@
 			<tbody>
 			{% for amateur in amateurs %}
 				<tr>
-				  <td><a href="{{ url_for("amateur", id=amateur.id) }}">{{ amateur.name }}</a></td>
+				  <td><a href="{{ url_for("amateur", amateurId=amateur.id) }}">{{ amateur.name }}</a></td>
 				  <td>{{ amateur.tw }}</td>
 				  <td>{{ amateur.mdhId }}</td>
 				  <td>{{ amateur.vxId }}</td>
