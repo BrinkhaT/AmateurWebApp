@@ -136,3 +136,9 @@ def jobRetweetAndDeleteTweets():
 	tasks.retweetAndDeleteTweets()
 	flash('Job retweetAndDeleteTweets abgeschlossen')
 	return redirect(url_for("index"))
+
+@app.route('/jobLowerCaseTwitterFollower')
+def jobLowerCaseTwitterFollower():
+	tasks.lowerCaseTwitterFollower()
+	flash('Job lowerCaseTwitterFollower() abgeschlossen')
+	return redirect(url_for("index"))

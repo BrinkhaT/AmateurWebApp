@@ -57,3 +57,9 @@ def retweetAndDeleteTweets():
 		db.session.commit()
 		app.logger.info("retweetAndDeleteTweets: Ende Twitter Config %r: Retweets %r" % (acc, counter))
 	app.logger.info("retweetAndDeleteTweets: Ende")
+	
+def lowerCaseTwitterFollower():
+	for t in db.session.query(models.TwitterFollower).all():
+		t.twName = t.twName.lower()
+		db.session.add(t)
+	db.session.commit()	
