@@ -142,3 +142,9 @@ def jobLowerCaseTwitterFollower():
 	tasks.lowerCaseTwitterFollower()
 	flash('Job lowerCaseTwitterFollower() abgeschlossen')
 	return redirect(url_for("index"))
+
+@app.route('/jobAddAllTwitterFollower')
+def jobAddAllTwitterFollower():
+	tasks.addAllTwitterFollower()
+	flash('Job addAllTwitterFollower() abgeschlossen')
+	return redirect(url_for("index"))

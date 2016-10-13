@@ -99,3 +99,10 @@ class TwitterHelper:
 		if self.checkRateLimitForUserTimeline() and self.validateUser(screen_name):
 			return tweepy.Cursor(self.api.user_timeline, screen_name=screen_name, since_id=since_id).items()
 		return []
+	
+	def getFollowers(self):
+		if self.api == None:
+			if self.initiateApi() == False:
+				return False
+			
+		return tweepy.Cursor(self.api.friends).items()

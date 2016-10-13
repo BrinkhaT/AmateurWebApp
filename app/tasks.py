@@ -1,4 +1,4 @@
-from app import app, db, models, twitter
+from app import app, db, models, twitter, AmateurHelper
 from datetime import datetime
 
 def checkFollowerForUpdates():
@@ -63,3 +63,19 @@ def lowerCaseTwitterFollower():
 		t.twName = t.twName.lower()
 		db.session.add(t)
 	db.session.commit()	
+	
+def addAllTwitterFollowerAsAmateur():
+	for acc in models.TwitterAccount.query.all():
+		wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
+			accessSecret=acc.twAccessSecret)
+		for f in wrapper.getFollowers():
+			twName = f.screen_name.lower()
+			
+			if db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twName == twName and models.TwitterFollower.twConfig == acc.id).first() == None:
+				if acc.id == 2:
+					AmateurHelper.createAmateurByTwitterName(twName)
+				else:
+					t = models.TwitterFollower(twName=twName, twConfig=acc.id)
+					db.session.add(t)
+			
+		db.session.commit()

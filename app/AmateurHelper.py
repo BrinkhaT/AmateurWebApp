@@ -38,6 +38,14 @@ def createAmateur(new):
     db.session.add(a)
     db.session.commit()
     
+def createAmateurByTwitterName(twName):
+    a = models.Amateur(name=twName,
+                   tw=twName)
+    updateOrCreateTwitterFollower(None, twName)
+    
+    db.session.add(a)
+    db.session.commit()
+    
 def updateOrCreateTwitterFollower(twNameOld, twNameNew):
     if twNameOld != None and twNameNew == None:
         t = db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twName == twNameOld and models.TwitterFollower.twConfig == 2).first()
