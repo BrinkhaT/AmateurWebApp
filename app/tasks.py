@@ -1,5 +1,6 @@
 from app import app, db, models, twitter, AmateurHelper
 from datetime import datetime
+import tweepy
 
 def checkFollowerForUpdates():
 	app.logger.info("checkFollowerForUpdates: Start")
@@ -64,18 +65,22 @@ def lowerCaseTwitterFollower():
 		db.session.add(t)
 	db.session.commit()	
 	
-def addAllTwitterFollowerAsAmateur():
+def addAllTwitterFollower():
 	for acc in models.TwitterAccount.query.all():
 		wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
 			accessSecret=acc.twAccessSecret)
-		for f in wrapper.getFollowers():
-			twName = f.screen_name.lower()
-			
-			if db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twName == twName and models.TwitterFollower.twConfig == acc.id).first() == None:
-				if acc.id == 2:
-					AmateurHelper.createAmateurByTwitterName(twName)
-				else:
-					t = models.TwitterFollower(twName=twName, twConfig=acc.id)
-					db.session.add(t)
-			
-		db.session.commit()
+		
+		try:
+			for f in wrapper.getFollowers():
+				twName = f.screen_name.lower()
+				
+				if db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twName == twName and models.TwitterFollower.twConfig == acc.id).first() == None:
+					if acc.id == 2:
+						AmateurHelper.createAmateurByTwitterName(twName)
+					else:
+						t = models.TwitterFollower(twName=twName, twConfig=acc.id)
+						db.session.add(t)
+				
+			db.session.commit()
+		except tweepy.TweepError as e:
+			app.logger.error('Der bei Abruf der Twitter-Freunde: %s (Code: %s)' % (e[0][0]['message'], e[0][0]['code']))

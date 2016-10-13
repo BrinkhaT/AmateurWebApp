@@ -105,4 +105,4 @@ class TwitterHelper:
 			if self.initiateApi() == False:
 				return False
 			
-		return tweepy.Cursor(self.api.friends).items()
+		return tweepy.Cursor(self.api.friends).items() 
