@@ -1,5 +1,5 @@
-from app import app, db, models, twitter, AmateurHelper
-from datetime import datetime
+from app import app, db, models, twitter, AmateurHelper, taskHelper
+from datetime import datetime, timedelta
 import tweepy
 
 def checkFollowerForUpdates():
@@ -37,6 +37,11 @@ def checkFollowerForUpdates():
 			db.session.commit()
 			app.logger.info("checkFollowerForUpdates: Ende Users %r: Geladene Tweets %r" % (f, counter))
 		app.logger.info("checkFollowerForUpdates: Ende Twitter Config %r" % (acc))
+		
+	nextStart = taskHelper.calc_next_start_time(app.config['JOB_INTERVAL_SEC_CHECKFOLLOWER'], app.config['JOB_VARIATION'])
+	app.scheduler.add_job(func=checkFollowerForUpdates, trigger='date', run_date=nextStart, id="checkFollowerForUpdates")
+	
+	app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))	
 	app.logger.info("checkFollowerForUpdates: Ende")
 
 def retweetAndDeleteTweets():
@@ -55,8 +60,14 @@ def retweetAndDeleteTweets():
 			#wrapper.updateStatus("Test mehr hier: http://www.google.de https://twitter.com/ABikerBar/status/" + str(t.id))
 			db.session.delete(t)
 			counter = counter + 1
+			
 		db.session.commit()
 		app.logger.info("retweetAndDeleteTweets: Ende Twitter Config %r: Retweets %r" % (acc, counter))
+	
+	nextStart = taskHelper.calc_next_start_time(app.config['JOB_INTERVAL_SEC_RETWEET'], app.config['JOB_VARIATION'])
+	app.scheduler.add_job(func=retweetAndDeleteTweets, trigger='date', run_date=nextStart, id="retweetAndDeleteTweets")
+	
+	app.logger.info("retweetAndDeleteTweets: naechster Start = " + repr(nextStart))
 	app.logger.info("retweetAndDeleteTweets: Ende")
 	
 def lowerCaseTwitterFollower():

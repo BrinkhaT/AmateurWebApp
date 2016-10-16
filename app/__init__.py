@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app, session_options={"autoflush": False})
+app.scheduler = APScheduler()
 
 from app import views, models, tasks
 

@@ -10,19 +10,7 @@ LOG_FILE = os.path.join(basedir, 'logs/webapp.log')
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'DiesIstMeineKleineAppUndDasIstStrengGeheim'
 
-JOBS = [
-        {
-            'id': 'job_checkFollowerForUpdates',
-            'func': 'app.tasks:checkFollowerForUpdates',
-            'args': None,
-            'trigger': 'interval',
-            'hours': 1
-        },
-        {
-            'id': 'job_retweetAndDeleteTweets',
-            'func': 'app.tasks:retweetAndDeleteTweets',
-            'args': None,
-            'trigger': 'interval',
-            'minutes': 5
-        }
-    ]
+#Konfiguration fuer die regelmaessigen Jobs
+JOB_VARIATION = 0.3 # Variation der Zeitpunkt +- 30%
+JOB_INTERVAL_SEC_RETWEET = 300 #Job retweetAndDeleteTweets aller 5 Min
+JOB_INTERVAL_SEC_CHECKFOLLOWER = 3600 #Job checkFollowerForUpdates jede Stunde
