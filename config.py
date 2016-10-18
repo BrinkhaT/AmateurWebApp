@@ -10,7 +10,14 @@ LOG_FILE = os.path.join(basedir, 'logs/webapp.log')
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'DiesIstMeineKleineAppUndDasIstStrengGeheim'
 
-#Konfiguration fuer die regelmaessigen Jobs
+# Konfiguration fuer alle Jobs
 JOB_VARIATION = 0.3 # Variation der Zeitpunkt +- 30%
-JOB_INTERVAL_SEC_RETWEET = 300 #Job retweetAndDeleteTweets aller 5 Min
-JOB_INTERVAL_SEC_CHECKFOLLOWER = 3600 #Job checkFollowerForUpdates jede Stunde
+
+# Einstellungen fuer den Job retweetAndDeleteTweets
+JOB_RETWEET_INTERVAL = 300
+JOB_RETWEET_AMOUNT = 2
+
+# Einstellungen fuer den Job retweetAndDeleteTweets
+JOB_CHECKTWITTER_INTERVAL = 1800
+JOB_CHECKTWITTER_CHECKPERRUN = 20
+JOB_CHECKTWITTER_INITIALLOAD = 3

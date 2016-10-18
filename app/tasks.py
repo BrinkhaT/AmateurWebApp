@@ -1,20 +1,24 @@
 from app import app, db, models, twitter, AmateurHelper, taskHelper
-from datetime import datetime, timedelta
+from datetime import datetime
 import tweepy
 
 def checkFollowerForUpdates():
 	app.logger.info("checkFollowerForUpdates: Start")
+	
+	checkPerRun = app.config['JOB_CHECKTWITTER_CHECKPERRUN']
+	initialLoad = app.config['JOB_CHECKTWITTER_INITIALLOAD']
+	
 	for acc in db.session.query(models.TwitterAccount).all():
 		app.logger.info("checkFollowerForUpdates: Start Twitter Config %r" % (acc))
 		wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
 			accessSecret=acc.twAccessSecret)
 
-		for f in db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twConfig == acc.id).order_by(models.TwitterFollower.lastChecked).limit(10).all():
+		for f in db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twConfig == acc.id).order_by(models.TwitterFollower.lastChecked).limit(checkPerRun).all():
 			app.logger.info("checkFollowerForUpdates: Start Users %r" % (f))
 
 			sSet = []
 			if f.lastChecked == None or f.twLastId == None:
-				sSet = wrapper.getStatusForUserLimited(f.twName, 3)
+				sSet = wrapper.getStatusForUserLimited(f.twName, initialLoad)
 			else:
 				sSet = wrapper.getStatusForUserSinceLastUpdate(f.twName, f.twLastId)
 
@@ -38,7 +42,7 @@ def checkFollowerForUpdates():
 			app.logger.info("checkFollowerForUpdates: Ende Users %r: Geladene Tweets %r" % (f, counter))
 		app.logger.info("checkFollowerForUpdates: Ende Twitter Config %r" % (acc))
 		
-	nextStart = taskHelper.calc_next_start_time(app.config['JOB_INTERVAL_SEC_CHECKFOLLOWER'], app.config['JOB_VARIATION'])
+	nextStart = taskHelper.calc_next_start_time(app.config['JOB_CHECKTWITTER_INTERVAL'], app.config['JOB_VARIATION'])
 	app.scheduler.add_job(func=checkFollowerForUpdates, trigger='date', run_date=nextStart, id="checkFollowerForUpdates")
 	
 	app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))	
@@ -64,7 +68,7 @@ def retweetAndDeleteTweets():
 		db.session.commit()
 		app.logger.info("retweetAndDeleteTweets: Ende Twitter Config %r: Retweets %r" % (acc, counter))
 	
-	nextStart = taskHelper.calc_next_start_time(app.config['JOB_INTERVAL_SEC_RETWEET'], app.config['JOB_VARIATION'])
+	nextStart = taskHelper.calc_next_start_time(app.config['JOB_RETWEET_INTERVAL'], app.config['JOB_VARIATION'])
 	app.scheduler.add_job(func=retweetAndDeleteTweets, trigger='date', run_date=nextStart, id="retweetAndDeleteTweets")
 	
 	app.logger.info("retweetAndDeleteTweets: naechster Start = " + repr(nextStart))
