@@ -9,7 +9,7 @@ nextStart = taskHelper.calc_next_start_time(app.config['JOB_RETWEET_INTERVAL'], 
 app.scheduler.add_job(func=tasks.retweetAndDeleteTweets, trigger='date', run_date=nextStart, id="retweetAndDeleteTweets")
 app.logger.info("retweetAndDeleteTweets: naechster Start = " + repr(nextStart))
 
-nextStart = taskHelper.calc_next_start_time(app.config['JOB_CHECKTWITTER_INTERVAL'], app.config['JOB_VARIATION'])
+nextStart = taskHelper.calc_next_start_time(app.config['JOB_CHECKTWITTER_INTERVAL_START'], app.config['JOB_VARIATION'])
 app.scheduler.add_job(func=tasks.checkFollowerForUpdates, trigger='date', run_date=nextStart, id="checkFollowerForUpdates")
 app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))
 
