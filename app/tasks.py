@@ -1,11 +1,11 @@
 from app import app, db, models, twitter, AmateurHelper, taskHelper
 from datetime import datetime
 import tweepy
+import json
 
 def checkFollowerForUpdates():
 	app.logger.info("checkFollowerForUpdates: Start")
 	
-	checkPerRun = app.config['JOB_CHECKTWITTER_CHECKPERRUN']
 	initialLoad = app.config['JOB_CHECKTWITTER_INITIALLOAD']
 	
 	for acc in db.session.query(models.TwitterAccount).all():
@@ -13,7 +13,7 @@ def checkFollowerForUpdates():
 		wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
 			accessSecret=acc.twAccessSecret)
 
-		for f in db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twConfig == acc.id).order_by(models.TwitterFollower.lastChecked).limit(checkPerRun).all():
+		for f in db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twConfig == acc.id).order_by(models.TwitterFollower.lastChecked).all():
 			app.logger.info("checkFollowerForUpdates: Start Users %r" % (f))
 
 			sSet = []
@@ -23,22 +23,32 @@ def checkFollowerForUpdates():
 				sSet = wrapper.getStatusForUserSinceLastUpdate(f.twName, f.twLastId)
 
 			counter = 0
-			for s in sSet:
-				if s.retweeted == False and db.session.query(models.TweetsToRetweet).get(s.id) == None:
-					t = models.TweetsToRetweet(id=s.id, twConfig=acc.id, tweetOwner=s.user.screen_name, 
-							tweetText=s.text)
-					counter += 1
-
-					if f.twLastId == None:
-						f.twLastId = s.id
-					else:
-						f.twLastId = max(f.twLastId, s.id)
-
-					db.session.add(t)
-
-			f.lastChecked = datetime.utcnow()
-			db.session.add(f)
-			db.session.commit()
+			try:
+				for s in sSet:
+					if s.retweeted == False and db.session.query(models.TweetsToRetweet).get(s.id) == None:
+						t = models.TweetsToRetweet(id=s.id, twConfig=acc.id, tweetOwner=s.user.screen_name, 
+								tweetText=s.text)
+						counter += 1
+	
+						if f.twLastId == None:
+							f.twLastId = s.id
+						else:
+							f.twLastId = max(f.twLastId, s.id)
+	
+						db.session.add(t)
+	
+				f.lastChecked = datetime.utcnow()
+				db.session.add(f)
+				db.session.commit()
+			except tweepy.TweepError as e:
+				error = json.loads(e.response.content)
+				if error['errors'][0]['code'] == 88:
+					app.logger.error('checkFollowerForUpdates: Zu viele API Zugriffe. Abbruch!')
+					break
+				else:
+					app.logger.error('checkFollowerForUpdates: Es ist ein Twitter-Fehler aufgetreten: : %s (%i)' % (error['errors'][0]['message'], error['errors'][0]['code']))
+					pass
+			
 			app.logger.info("checkFollowerForUpdates: Ende Users %r: Geladene Tweets %r" % (f, counter))
 		app.logger.info("checkFollowerForUpdates: Ende Twitter Config %r" % (acc))
 		
