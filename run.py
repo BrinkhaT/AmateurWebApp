@@ -14,4 +14,4 @@ app.scheduler.add_job(func=tasks.checkFollowerForUpdates, trigger='date', run_da
 app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))
 
 app.logger.info('Scheduler started, start WebApp')
-app.run(debug=True, host="0.0.0.0", use_reloader=False)
+app.run(debug=False, host="0.0.0.0", use_reloader=False)
