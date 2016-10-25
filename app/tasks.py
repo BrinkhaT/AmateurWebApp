@@ -6,6 +6,10 @@ import json
 def checkFollowerForUpdates():
 	app.logger.info("checkFollowerForUpdates: Start")
 	
+	nextStart = taskHelper.calc_next_start_time(app.config['JOB_CHECKTWITTER_INTERVAL'], app.config['JOB_VARIATION'])
+	app.scheduler.add_job(func=checkFollowerForUpdates, trigger='date', run_date=nextStart, id="checkFollowerForUpdates")
+	app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))	
+	
 	initialLoad = app.config['JOB_CHECKTWITTER_INITIALLOAD']
 	
 	for acc in db.session.query(models.TwitterAccount).all():
@@ -51,15 +55,16 @@ def checkFollowerForUpdates():
 			
 			app.logger.info("checkFollowerForUpdates: Ende Users %r: Geladene Tweets %r" % (f, counter))
 		app.logger.info("checkFollowerForUpdates: Ende Twitter Config %r" % (acc))
-		
-	nextStart = taskHelper.calc_next_start_time(app.config['JOB_CHECKTWITTER_INTERVAL'], app.config['JOB_VARIATION'])
-	app.scheduler.add_job(func=checkFollowerForUpdates, trigger='date', run_date=nextStart, id="checkFollowerForUpdates")
 	
-	app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))	
 	app.logger.info("checkFollowerForUpdates: Ende")
 
 def retweetAndDeleteTweets():
 	app.logger.info("retweetAndDeleteTweets: Start")
+	
+	nextStart = taskHelper.calc_next_start_time(app.config['JOB_RETWEET_INTERVAL'], app.config['JOB_VARIATION'])
+	app.scheduler.add_job(func=retweetAndDeleteTweets, trigger='date', run_date=nextStart, id="retweetAndDeleteTweets")
+	app.logger.info("retweetAndDeleteTweets: naechster Start = " + repr(nextStart))
+	
 	for acc in models.TwitterAccount.query.all():
 		app.logger.info("retweetAndDeleteTweets: Start Twitter Config %r" % (acc))
 
@@ -77,11 +82,7 @@ def retweetAndDeleteTweets():
 			
 		db.session.commit()
 		app.logger.info("retweetAndDeleteTweets: Ende Twitter Config %r: Retweets %r" % (acc, counter))
-	
-	nextStart = taskHelper.calc_next_start_time(app.config['JOB_RETWEET_INTERVAL'], app.config['JOB_VARIATION'])
-	app.scheduler.add_job(func=retweetAndDeleteTweets, trigger='date', run_date=nextStart, id="retweetAndDeleteTweets")
-	
-	app.logger.info("retweetAndDeleteTweets: naechster Start = " + repr(nextStart))
+
 	app.logger.info("retweetAndDeleteTweets: Ende")
 	
 def lowerCaseTwitterFollower():
