@@ -7,8 +7,13 @@ from app import db, models
 
 def updateAmateur(old, new):
     old.name = parseFormData(new.name.data)
-    updateOrCreateTwitterFollower(old.tw, parseFormData(new.tw.data))
-    old.tw = parseFormData(new.tw.data)
+    
+    twName = parseFormData(new.tw.data)
+    if twName != None:
+        twName = twName.lower()
+        updateOrCreateTwitterFollower(old.tw, twName)
+        old.tw = twName
+        
     old.mdhId = parseFormData(new.mdhId.data)
     old.vxId = parseFormData(new.vxId.data)
     old.pmId = parseFormData(new.pmId.data)
@@ -27,18 +32,24 @@ def parseFormData(data):
         return None
     
 def createAmateur(new):
+    
+    twName = parseFormData(new.tw.data)
+    if twName != None:
+        twName = twName.lower()
+    
     a = models.Amateur(name=parseFormData(new.name.data),
-                   tw=parseFormData(new.tw.data),
+                   tw=twName,
                    mdhId=parseFormData(new.mdhId.data),
                    vxId=parseFormData(new.vxId.data),
                    pmId=parseFormData(new.pmId.data),
                    subDomain=parseFormData(new.subDomain.data))
-    updateOrCreateTwitterFollower(None, parseFormData(new.tw.data))
+    updateOrCreateTwitterFollower(None, twName)
     
     db.session.add(a)
     db.session.commit()
     
 def createAmateurByTwitterName(twName):
+    twName = twName.lower()
     a = models.Amateur(name=twName,
                    tw=twName)
     updateOrCreateTwitterFollower(None, twName)
