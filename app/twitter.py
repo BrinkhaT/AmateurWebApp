@@ -56,6 +56,7 @@ class TwitterHelper:
 				return False
 			
 		try:
+			basedir = os.path.abspath(os.path.dirname(__file__))
 			filename = os.path.join(basedir, 'temp.jpg')
 			request = requests.get(urlToPic, stream=True)
 			if request.status_code == 200:
