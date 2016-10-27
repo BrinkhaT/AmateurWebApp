@@ -1,4 +1,6 @@
 import tweepy
+import requests
+import os
 from app import app
 
 class TwitterHelper:
@@ -42,6 +44,27 @@ class TwitterHelper:
 			
 		try:
 			self.api.update_status(status=text)
+		except tweepy.TweepError as e:
+			app.logger.error('Fehler beim Statusupdate: %s (Code: %s)' % (e[0][0]['message'], e[0][0]['code']))
+			return False
+		
+		return True
+
+	def updateStatusWithPic(self, text, urlToPic):
+		if self.api == None:
+			if self.initiateApi() == False:
+				return False
+			
+		try:
+			filename = 'temp.jpg'
+			request = requests.get(urlToPic, stream=True)
+			if request.status_code == 200:
+				with open(filename, 'wb') as image:
+					for chunk in request:
+						image.write(chunk)
+
+		        self.api.update_with_media(filename, status=text)
+		        os.remove(filename)
 		except tweepy.TweepError as e:
 			app.logger.error('Fehler beim Statusupdate: %s (Code: %s)' % (e[0][0]['message'], e[0][0]['code']))
 			return False

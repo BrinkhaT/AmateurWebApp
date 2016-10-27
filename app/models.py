@@ -46,3 +46,12 @@ class TwitterAccount(db.Model):
 
     def __repr__(self):
         return '<TwitterAccount %r (%r)>' % (self.twName, self.id)
+
+class RssFeed(db.Model):
+    __tablename__ = 'rss_feeds'
+    id = db.Column(db.Integer, primary_key=True)
+    feedName = db.Column(db.String(150))
+    feedUrl = db.Column(db.String(150), unique=True, nullable=False)
+    lastChecked = db.Column(db.DateTime)
+    lastId = db.Column(db.BigInteger)
+    function = db.Column(db.String(50))
