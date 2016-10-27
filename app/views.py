@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, jsonify
 import requests
 
-from app import app, db, models, tasks, AmateurHelper
+from app import app, db, models, tasks, AmateurHelper, rssHelper
 
 from .forms import AmateurForm, TwitterFollowerForm
 
@@ -147,4 +147,10 @@ def jobLowerCaseTwitterFollower():
 def jobAddAllTwitterFollower():
 	tasks.addAllTwitterFollower()
 	flash('Job addAllTwitterFollower() abgeschlossen')
+	return redirect(url_for("index"))
+
+@app.route('/jobLoadAndSaveMdhVids')
+def jobLoadAndSaveMdhVids():
+	rssHelper.loadAndSaveMdhVids()
+	flash('Job loadAndSaveMdhVids() abgeschlossen')
 	return redirect(url_for("index"))
