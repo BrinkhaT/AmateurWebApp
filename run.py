@@ -14,7 +14,7 @@ app.scheduler.add_job(func=tasks.checkFollowerForUpdates, trigger='date', run_da
 app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))
 
 interval = app.config['JOB_MDHNEWRSS_INTERVAL']
-app.scheduler.add_job(func=rssHelper.loadAndSaveMdhVids, trigger='interval', minutes=, id="loadAndSaveMdhVids")
+app.scheduler.add_job(func=rssHelper.loadAndSaveMdhVids, trigger='interval', minutes=interval, id="loadAndSaveMdhVids")
 app.logger.info("loadAndSaveMdhVids: gestartet, Intervall: %i Minuten" % (interval))
 
 app.logger.info('Scheduler started, start WebApp')
