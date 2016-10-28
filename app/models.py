@@ -55,3 +55,12 @@ class RssFeed(db.Model):
     lastChecked = db.Column(db.DateTime)
     lastId = db.Column(db.BigInteger)
     function = db.Column(db.String(50))
+    
+    def __repr__(self):
+        return '<RssFeed %r (%s)>' % (self.feedName, self.lastChecked)
+    
+class SysProp(db.Model):
+    __tablename__ = 'sys_props'
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    value = db.Column(db.String(200), unique=True, nullable=False)

@@ -1,10 +1,11 @@
-from app import app, db, models, twitter
+from app import app, db, models, twitter, bitly
 from datetime import datetime, timedelta, tzinfo
 import urllib2
 import xmltodict
 import pytz
 
 def loadAndSaveMdhVids():
+    app.logger.info("loadAndSaveMdhVids: Start")
     acc = db.session.query(models.TwitterAccount).filter(models.TwitterAccount.id == 2).first()
     if acc:
         wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
@@ -26,13 +27,20 @@ def loadAndSaveMdhVids():
                 if not lastChecked or i.vidPubDate > lastChecked:
                     amateur = db.session.query(models.Amateur).filter(models.Amateur.mdhId == i.mdhId).first()
                     if amateur:
-                        text = 'Geiles neues Video von %s: %s' % (i.mdhUser, i.vidLink)
+                        shortLink = bitly.shortenUrl(i.vidLink)
+                        if amateur.tw:
+                            text = 'Geiles neues Video von @%s: %s' % (amateur.tw, shortLink)
+                        else:
+                            text = 'Geiles neues Video von %s: %s' % (i.mdhUser, shortLink)
+                        
                         wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg)
                         app.logger.info('loadAndSaveMdhVids: neues Video eines Amateurs: %s' % (text))
                 
             rss.lastChecked = now
             db.session.add(rss)
             db.session.commit()
+            
+    app.logger.info("loadAndSaveMdhVids: Ende")
             
 class mdhItem:
     def __init__(self, i):
