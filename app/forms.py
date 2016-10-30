@@ -8,6 +8,7 @@ class AmateurForm(FlaskForm):
     mdhId = StringField('mdhId', validators=[Length(min=0, max=30)])
     vxId = StringField('vxId', validators=[Length(min=0, max=30)])
     pmId = StringField('pmId', validators=[Length(min=0, max=30)])
+    pmRef = StringField('pmRef', validators=[Length(min=0, max=30)])
     subDomain = StringField('subDomain', validators=[Length(min=0, max=30)])
     
 class TwitterFollowerForm(FlaskForm):

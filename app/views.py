@@ -107,6 +107,7 @@ def editAmateur(amateurId):
 		form.mdhId.data = a.mdhId
 		form.vxId.data = a.vxId
 		form.pmId.data = a.pmId
+		form.pmRef.data = a.pmRef
 		form.subDomain.data = a.subDomain
 	return render_template('editAmateur.html', form=form, amateur=a)
 	

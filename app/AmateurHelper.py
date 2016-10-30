@@ -17,6 +17,7 @@ def updateAmateur(old, new):
     old.mdhId = parseFormData(new.mdhId.data)
     old.vxId = parseFormData(new.vxId.data)
     old.pmId = parseFormData(new.pmId.data)
+    old.pmRef = parseFormData(new.pmRef.data)
     old.subDomain = parseFormData(new.subDomain.data)
         
     db.session.add(old)
@@ -42,6 +43,7 @@ def createAmateur(new):
                    mdhId=parseFormData(new.mdhId.data),
                    vxId=parseFormData(new.vxId.data),
                    pmId=parseFormData(new.pmId.data),
+                   pmRef=parseFormData(new.pmRef.data),
                    subDomain=parseFormData(new.subDomain.data))
     updateOrCreateTwitterFollower(None, twName)
     

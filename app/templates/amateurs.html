@@ -24,7 +24,7 @@
 				  <td>{{ amateur.tw }}</td>
 				  <td>{{ amateur.mdhId }}</td>
 				  <td>{{ amateur.vxId }}</td>
-				  <td>{{ amateur.pmId }}</td>
+				  <td>{{ amateur.pmId }} | {{ amateur.pmRef }}</td>
 				  <td><a href="{{ url_for("editAmateur", amateurId=amateur.id) }}">Edit</a> | <a href="{{ url_for("deleteAmateur", amateurId=amateur.id) }}">Delete</a></td>
 				</tr>
 			{% endfor %}
