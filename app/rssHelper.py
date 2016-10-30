@@ -74,7 +74,9 @@ def loadAndTweetPPPVids():
         amateurSet = db.session.query(models.Amateur).filter(models.Amateur.pmId.isnot(None)).all()
         for amateur in amateurSet:
             if amateur.pmId and amateur.pmRef:
-                data = getPPPItems('http://ppp.pornme.com/%s/m/rss/videos/?ref=%s' % (amateur.pmId, amateur.pmRef))
+                url = 'http://ppp.pornme.com/%s/m/rss/videos/?ref=%s' % (amateur.pmId, amateur.pmRef)
+                app.logger.info('loadAndTweetPPPVids: pruefe Feed von %s (%s)' % (amateur.name, url))
+                data = getPPPItems(url)
                 now = datetime.now()
                 lastChecked = amateur.pmLastChecked
                 
