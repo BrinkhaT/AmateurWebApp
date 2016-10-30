@@ -149,8 +149,8 @@ def jobAddAllTwitterFollower():
 	flash('Job addAllTwitterFollower() abgeschlossen')
 	return redirect(url_for("index"))
 
-@app.route('/jobLoadAndSaveMdhVids')
-def jobLoadAndSaveMdhVids():
-	rssHelper.loadAndSaveMdhVids()
-	flash('Job loadAndSaveMdhVids() abgeschlossen')
+@app.route('/jobRunRssChecks')
+def jobRunRssChecks():
+	tasks.runRssChecks()
+	flash('Job runRssChecks() abgeschlossen')
 	return redirect(url_for("index"))

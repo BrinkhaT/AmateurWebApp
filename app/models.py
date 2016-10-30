@@ -8,6 +8,8 @@ class Amateur(db.Model):
     mdhId = db.Column(db.String(30))
     vxId = db.Column(db.String(30))
     pmId = db.Column(db.String(30))
+    pmRef = db.Column(db.String(30))
+    pmLastChecked = db.Column(db.DateTime)
     subDomain = db.Column(db.String(30))
 
     def __repr__(self):

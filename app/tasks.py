@@ -1,7 +1,15 @@
-from app import app, db, models, twitter, AmateurHelper, taskHelper
+from app import app, db, models, twitter, AmateurHelper, taskHelper, rssHelper
 from datetime import datetime
 import tweepy
 import json
+
+def runRssChecks():
+	app.logger.info("runRssChecks: Start")
+	
+	rssHelper.loadAndSaveMdhVids()
+	rssHelper.loadAndTweetPPPVids()
+	
+	app.logger.info("runRssChecks: Ende")
 
 def checkFollowerForUpdates():
 	app.logger.info("checkFollowerForUpdates: Start")

@@ -13,8 +13,8 @@ nextStart = taskHelper.calc_next_start_time(app.config['JOB_CHECKTWITTER_INTERVA
 app.scheduler.add_job(func=tasks.checkFollowerForUpdates, trigger='date', run_date=nextStart, id="checkFollowerForUpdates")
 app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))
 
-interval = app.config['JOB_MDHNEWRSS_INTERVAL']
-app.scheduler.add_job(func=rssHelper.loadAndSaveMdhVids, trigger='interval', minutes=interval, id="loadAndSaveMdhVids")
+interval = app.config['JOB_RSSNEWVID_INTERVAL']
+app.scheduler.add_job(func=tasks.runRssChecks, trigger='interval', minutes=interval, id="runRssChecks")
 app.logger.info("loadAndSaveMdhVids: gestartet, Intervall: %i Minuten" % (interval))
 
 app.logger.info('Scheduler started, start WebApp')
