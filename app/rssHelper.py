@@ -149,4 +149,5 @@ def getDataFromRssFeed(url):
         data = xmltodict.parse(data)
         return data
     except:
+        app.logger.error('Fehler beim Parsen des RSS Feeds')
         return None
