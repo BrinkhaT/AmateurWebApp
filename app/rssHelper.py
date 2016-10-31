@@ -21,6 +21,7 @@ def loadAndSaveMdhVids():
             
             newVids = []
             for i in getMdhItems(rss.feedUrl):
+                app.logger.info('loadAndSaveMdhVids: Video von %s um %s' % (i.mdhUser, i.vidPubDate))
                 if not lastChecked or i.vidPubDate > lastChecked:
                     newVids.append('%s (%s)' % (i.mdhUser, i.mdhId))
                     amateur = db.session.query(models.Amateur).filter(models.Amateur.mdhId == i.mdhId).first()
