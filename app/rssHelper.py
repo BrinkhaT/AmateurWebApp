@@ -16,6 +16,8 @@ def loadAndSaveMdhVids():
         for rss in rssSet:
             now = datetime.now()
             lastChecked = rss.lastChecked
+            app.logger.info('loadAndSaveMdhVids: now = %s' % (now))
+            app.logger.info('loadAndSaveMdhVids: lastChecked = %s' % (lastChecked))
             
             newVids = []
             for i in getMdhItems(rss.feedUrl):
