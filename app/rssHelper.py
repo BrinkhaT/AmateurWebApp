@@ -84,13 +84,17 @@ def loadAndTweetPPPVids():
                 url = 'http://ppp.pornme.com/%s/m/rss/videos/?ref=%s' % (amateur.pmId, amateur.pmRef)
                 app.logger.info('loadAndTweetPPPVids: pruefe Feed von %s (%s)' % (amateur.name, url))
                 data = getPPPItems(url)
-                now = datetime.now()
+
                 lastChecked = amateur.pmLastChecked
+                newestVid = lastChecked
                 
-                if not lastChecked:
-                    counter = 0
-                    for i in data:
-                        if counter < 3:
+                counter = 0
+                for i in data:
+                    if not lastChecked or i.vidPubDate > lastChecked:
+                        if counter >= 1:
+                            break
+                        else:
+                            newestVid = i.vidPubDate
                             shortLink = bitly.shortenUrl(i.vidLink)
                             if amateur.tw:
                                 text = 'Geiles neues Video von @%s: %s' % (amateur.tw, shortLink)
@@ -100,20 +104,10 @@ def loadAndTweetPPPVids():
                             wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg)
                             app.logger.info('loadAndTweetPPPVids: neues Video eines Amateurs: %s' % (text))
                             counter = counter + 1
-                        else:
-                            break
-                else:
-                    for i in data:
-                        if i.vidPubDate > lastChecked:
-                            shortLink = bitly.shortenUrl(i.vidLink)
-                            if amateur.tw:
-                                text = 'Geiles neues Video von @%s: %s' % (amateur.tw, shortLink)
-                            else:
-                                text = 'Geiles neues Video von %s: %s' % (i.mdhUser, shortLink)
+                
+                
                             
-                            wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg)
-                            app.logger.info('loadAndTweetPPPVids: neues Video eines Amateurs: %s' % (text))
-                amateur.pmLastChecked = now
+                amateur.pmLastChecked = newestVid
                 db.session.add(amateur)
                 db.session.commit()            
         
@@ -127,6 +121,8 @@ def getPPPItems(url):
         for i in data['rss']['channel']['item']:
             i = pppItem(i)
             items.append(i)
+            
+    items = sorted(items, key=attrgetter('vidPubDate'))
     
     return items
 
@@ -144,6 +140,18 @@ class pppItem:
         
         if m:
             self.vidImg = m.group(1)
+            
+            p = re.compile('^(.*)(_320_180_)(.*)$')
+            m = p.match(self.vidImg)
+            
+            if m:
+                self.vidImg = m.group(1) + '_1280_720_' + m.group(3)
+            else:
+                p = re.compile('^(.*)(\/16_9\/large\/)(.*)$')
+                m = p.match(self.vidImg)
+                
+                if m:
+                    self.vidImg = m.group(1) + '/original/' + m.group(3)
         
         pubDateStr = str(i['pubDate'])
         self.vidPubDate = datetime.strptime(pubDateStr[:-6], '%a, %d %b %Y %H:%M:%S')

@@ -3,6 +3,30 @@ from datetime import datetime
 import tweepy
 import json
 
+def jobsEveryFiveMinutes():
+	app.logger.info("jobsEveryFiveMinutes: Start")
+	
+	nextStart = taskHelper.calc_next_start_time(app.config['JOB_FIVE_INTERVAL'], app.config['JOB_VARIATION'])
+	app.scheduler.add_job(func=jobsEveryFiveMinutes, trigger='date', run_date=nextStart, id="jobsEveryFiveMinutes")
+	app.logger.info("jobsEveryFiveMinutes: naechster Start = " + repr(nextStart))
+	
+	rssHelper.loadAndSaveMdhVids()
+	retweetAndDeleteTweets()
+	
+	app.logger.info("jobsEveryFiveMinutes: Ende")
+	
+def jobsEveryHour():
+	app.logger.info("jobsEveryHour: Start")
+	
+	nextStart = taskHelper.calc_next_start_time(app.config['JOB_HOUR_INTERVAL'], app.config['JOB_VARIATION'])
+	app.scheduler.add_job(func=jobsEveryHour, trigger='date', run_date=nextStart, id="jobsEveryHour")
+	app.logger.info("jobsEveryHour: naechster Start = " + repr(nextStart))	
+	
+	rssHelper.loadAndTweetPPPVids()
+	checkFollowerForUpdates()
+	
+	app.logger.info("jobsEveryHour: Ende")
+
 def runRssChecks():
 	app.logger.info("runRssChecks: Start")
 	
@@ -13,10 +37,6 @@ def runRssChecks():
 
 def checkFollowerForUpdates():
 	app.logger.info("checkFollowerForUpdates: Start")
-	
-	nextStart = taskHelper.calc_next_start_time(app.config['JOB_CHECKTWITTER_INTERVAL'], app.config['JOB_VARIATION'])
-	app.scheduler.add_job(func=checkFollowerForUpdates, trigger='date', run_date=nextStart, id="checkFollowerForUpdates")
-	app.logger.info("checkFollowerForUpdates: naechster Start = " + repr(nextStart))	
 	
 	initialLoad = app.config['JOB_CHECKTWITTER_INITIALLOAD']
 	
@@ -68,10 +88,6 @@ def checkFollowerForUpdates():
 
 def retweetAndDeleteTweets():
 	app.logger.info("retweetAndDeleteTweets: Start")
-	
-	nextStart = taskHelper.calc_next_start_time(app.config['JOB_RETWEET_INTERVAL'], app.config['JOB_VARIATION'])
-	app.scheduler.add_job(func=retweetAndDeleteTweets, trigger='date', run_date=nextStart, id="retweetAndDeleteTweets")
-	app.logger.info("retweetAndDeleteTweets: naechster Start = " + repr(nextStart))
 	
 	for acc in models.TwitterAccount.query.all():
 		app.logger.info("retweetAndDeleteTweets: Start Twitter Config %r" % (acc))
