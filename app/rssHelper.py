@@ -1,5 +1,6 @@
 from app import app, db, models, twitter, bitly
 from datetime import datetime, timedelta, tzinfo
+from operator import attrgetter
 import urllib2
 import xmltodict
 import pytz
@@ -14,15 +15,13 @@ def loadAndSaveMdhVids():
         
         rssSet = db.session.query(models.RssFeed).filter(models.RssFeed.function == 'mdhNewVids').all()
         for rss in rssSet:
-            now = datetime.now()
             lastChecked = rss.lastChecked
-            app.logger.info('loadAndSaveMdhVids: now = %s' % (now))
-            app.logger.info('loadAndSaveMdhVids: lastChecked = %s' % (lastChecked))
+            newestVid = lastChecked
             
             newVids = []
             for i in getMdhItems(rss.feedUrl):
-                app.logger.info('loadAndSaveMdhVids: Video von %s um %s' % (i.mdhUser, i.vidPubDate))
                 if not lastChecked or i.vidPubDate > lastChecked:
+                    newestVid = i.vidPubDate
                     newVids.append('%s (%s)' % (i.mdhUser, i.mdhId))
                     amateur = db.session.query(models.Amateur).filter(models.Amateur.mdhId == i.mdhId).first()
                     if amateur:
@@ -36,7 +35,7 @@ def loadAndSaveMdhVids():
                         app.logger.info('loadAndSaveMdhVids: neues Video eines Amateurs: %s' % (text))
                 
             app.logger.info('loadAndSaveMdhVids: im Feed enthaltene User: %s' % (', '.join(newVids)))
-            rss.lastChecked = now
+            rss.lastChecked = newestVid
             db.session.add(rss)
             db.session.commit()
             
@@ -50,6 +49,8 @@ def getMdhItems(url):
         for i in data['rss']['channel']['item']:
             i = mdhItem(i)
             items.append(i)
+            
+    items = sorted(items, key=attrgetter('vidPubDate'))
     
     return items
             
@@ -66,6 +67,9 @@ class mdhItem:
         
         pubDateStr = str(i['pubDate'])
         self.vidPubDate = datetime.strptime(pubDateStr[:-6], '%a, %d %b %Y %H:%M:%S')
+        
+    def __repr__(self):
+        return '<MdhItem %s: %s (%s)>' % (self.mdhUser, self.vidTitel, self.vidPubDate)
         
 def loadAndTweetPPPVids():
     app.logger.info("loadAndTweetPPPVids: Start")
