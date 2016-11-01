@@ -14,7 +14,7 @@ SECRET_KEY = 'DiesIstMeineKleineAppUndDasIstStrengGeheim'
 JOB_VARIATION = 0.3 # Variation der Zeitpunkt +- 30%
 JOB_FIVE_INTERVAL = 300
 JOB_HOUR_INTERVAL_START = 120
-JOB_HOUR_INTERVAL = 1800
+JOB_HOUR_INTERVAL = 3600
 
 # Einstellungen fuer den Job retweetAndDeleteTweets
 JOB_RETWEET_AMOUNT = 2

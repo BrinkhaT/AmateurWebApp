@@ -135,6 +135,7 @@ class pppItem:
         self.vidImg = None
         
         desc = i['description']
+        desc = ' '.join(desc.split())
         p = re.compile('^.*img src=\"(.*)\" width.*$')
         m = p.match(desc)
         
