@@ -60,6 +60,12 @@ def createAmateurByTwitterName(twName):
     db.session.commit()
     
 def updateOrCreateTwitterFollower(twNameOld, twNameNew):
+    if twNameNew:
+        twNameNew = twNameNew.lower()
+        
+    if twNameOld:
+        twNameOld = twNameOld.lower()
+    
     if twNameOld != None and twNameNew == None:
         t = db.session.query(models.TwitterFollower).filter(models.TwitterFollower.twName == twNameOld and models.TwitterFollower.twConfig == 2).first()
         db.session.delete(t)
