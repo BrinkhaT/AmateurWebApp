@@ -51,6 +51,9 @@ class TwitterHelper:
 		return True
 
 	def updateStatusWithPic(self, text, urlToPic):
+		if not urlToPic:
+			self.updateStatus(text=text)
+		
 		if self.api == None:
 			if self.initiateApi() == False:
 				return False
