@@ -70,7 +70,8 @@ class TwitterHelper:
 		        self.api.update_with_media(filename, status=text)
 		        os.remove(filename)
 		except tweepy.TweepError as e:
-			app.logger.error('Fehler beim Statusupdate: %s (Code: %s)' % (e[0][0]['message'], e[0][0]['code']))
+			os.remove(filename)
+			app.logger.error('Fehler beim Statusupdate: %r ' % (e))
 			return False
 		
 		return True

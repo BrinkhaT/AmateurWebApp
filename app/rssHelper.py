@@ -95,8 +95,10 @@ def loadAndTweetPPPVids():
                             shortLink = bitly.shortenUrl(i.vidLink)
                             text = 'Geiles neues Video von %s: %s' % (i.pppUser, shortLink)
                             
-                            wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg)
-                            app.logger.info('loadAndTweetPPPVids: neues Video eines Amateurs: %s' % (text))
+                            if wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg):
+                                app.logger.info('loadAndTweetPPPVids: neues Video eines Amateurs: %s' % (text))
+                            else:
+                                app.logger.error('loadAndTweetPPPVids: neues Video eines Amateurs (%s) konnte nicht veroeffentlicht werden' % (text))
                             counter = counter + 1
                 
                 
