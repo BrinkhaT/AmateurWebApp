@@ -26,10 +26,7 @@ def loadAndSaveMdhVids():
                     amateur = db.session.query(models.Amateur).filter(models.Amateur.mdhId == i.mdhId).first()
                     if amateur:
                         shortLink = bitly.shortenUrl(i.vidLink)
-                        if amateur.tw:
-                            text = 'Geiles neues Video von @%s: %s' % (amateur.tw, shortLink)
-                        else:
-                            text = 'Geiles neues Video von %s: %s' % (i.mdhUser, shortLink)
+                        text = 'Geiles neues Video von %s: %s' % (i.mdhUser, shortLink)
                         
                         wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg)
                         app.logger.info('loadAndSaveMdhVids: neues Video eines Amateurs: %s' % (text))
@@ -96,10 +93,7 @@ def loadAndTweetPPPVids():
                         else:
                             newestVid = i.vidPubDate
                             shortLink = bitly.shortenUrl(i.vidLink)
-                            if amateur.tw:
-                                text = 'Geiles neues Video von @%s: %s' % (amateur.tw, shortLink)
-                            else:
-                                text = 'Geiles neues Video von %s: %s' % (i.mdhUser, shortLink)
+                            text = 'Geiles neues Video von %s: %s' % (i.pppUser, shortLink)
                             
                             wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg)
                             app.logger.info('loadAndTweetPPPVids: neues Video eines Amateurs: %s' % (text))
