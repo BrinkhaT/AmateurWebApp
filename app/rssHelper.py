@@ -8,7 +8,7 @@ import re
 
 def publishNewVid(wrapper, vidLink, vidImg, aName, proc):
     shortLink = bitly.shortenUrl(vidLink)
-    text = 'Geiles neues #Video von %s: %s' % (aName, shortLink)
+    text = 'Geiles neues #Video von %s: %s #porn #xxx #amateur' % (aName, shortLink)
     
     if wrapper.updateStatusWithPic(text=text, urlToPic=vidImg):
         app.logger.info('%s: neues Video eines Amateurs: %s' % (proc, text))
