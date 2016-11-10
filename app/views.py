@@ -120,6 +120,14 @@ def deleteAmateur(amateurId):
 	db.session.delete(a)
 	db.session.commit()
 	return redirect(url_for("amateurs"))
+
+# Route fuer die Anzeige des Logs
+@app.route('/log')
+def showLog():
+	pathLogFile = app.config['LOG_FILE']
+	logFile = reversed(open(pathLogFile).readlines())
+
+	return render_template('showLog.html', logFile=logFile)
 	
 # Routen fuer das Starten der Jobs
 @app.route('/jobs')
