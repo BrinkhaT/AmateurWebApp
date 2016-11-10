@@ -21,3 +21,6 @@ file_handler.setLevel(logging.INFO)
 app.logger.setLevel(logging.INFO)
 app.logger.addHandler(file_handler)
 
+aplogger = logging.getLogger('apscheduler')
+aplogger.setLevel(logging.WARNING)
+aplogger.addHandler(file_handler)
