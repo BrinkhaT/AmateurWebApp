@@ -6,12 +6,25 @@ import xmltodict
 import pytz
 import re
 
+def publishNewVid(wrapper, vidLink, vidImg, aName, proc):
+    shortLink = bitly.shortenUrl(vidLink)
+    text = 'Geiles neues #Video von %s: %s' % (aName, shortLink)
+    
+    if wrapper.updateStatusWithPic(text=text, urlToPic=vidImg):
+        app.logger.info('%s: neues Video eines Amateurs: %s' % (proc, text))
+    else:
+        app.logger.error('%s: neues Video eines Amateurs (%s) konnte nicht veroeffentlicht werden' % (proc, text))
+
 def loadAndSaveMdhVids():
     app.logger.info("loadAndSaveMdhVids: Start")
     acc = db.session.query(models.TwitterAccount).filter(models.TwitterAccount.id == 2).first()
+    accAllFeeds = db.session.query(models.TwitterAccount).filter(models.TwitterAccount.id == 3).first()
     if acc:
         wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
             accessSecret=acc.twAccessSecret)
+        
+        wrapperAll = twitter.TwitterHelper(consKey=accAllFeeds.twConsKey, consSecret=accAllFeeds.twConsSecret, 
+                                            accessToken=accAllFeeds.twAccessToken, accessSecret=accAllFeeds.twAccessSecret)
         
         rssSet = db.session.query(models.RssFeed).filter(models.RssFeed.function == 'mdhNewVids').all()
         for rss in rssSet:
@@ -25,12 +38,10 @@ def loadAndSaveMdhVids():
                     newVids.append('%s (%s)' % (i.mdhUser, i.mdhId))
                     amateur = db.session.query(models.Amateur).filter(models.Amateur.mdhId == i.mdhId).first()
                     if amateur:
-                        shortLink = bitly.shortenUrl(i.vidLink)
-                        text = 'Geiles neues Video von %s: %s' % (i.mdhUser, shortLink)
+                        publishNewVid(wrapper, i.vidLink, i.vidImg, i.mdhUser, 'loadAndSaveMdhVids')
+                    if wrapperAll:
+                        publishNewVid(wrapperAll, i.vidLink, i.vidImg, i.mdhUser, 'loadAndSaveMdhVids_ALL')
                         
-                        wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg)
-                        app.logger.info('loadAndSaveMdhVids: neues Video eines Amateurs: %s' % (text))
-                
             app.logger.info('loadAndSaveMdhVids: im Feed enthaltene User: %s' % (', '.join(newVids)))
             rss.lastChecked = newestVid
             db.session.add(rss)
@@ -92,17 +103,9 @@ def loadAndTweetPPPVids():
                             break
                         else:
                             newestVid = i.vidPubDate
-                            shortLink = bitly.shortenUrl(i.vidLink)
-                            text = 'Geiles neues Video von %s: %s' % (i.pppUser, shortLink)
-                            
-                            if wrapper.updateStatusWithPic(text=text, urlToPic=i.vidImg):
-                                app.logger.info('loadAndTweetPPPVids: neues Video eines Amateurs: %s' % (text))
-                            else:
-                                app.logger.error('loadAndTweetPPPVids: neues Video eines Amateurs (%s) konnte nicht veroeffentlicht werden' % (text))
+                            publishNewVid(wrapper, i.vidLink, i.vidImg, i.pppUser, 'loadAndTweetPPPVids')
                             counter = counter + 1
-                
-                
-                            
+
                 amateur.pmLastChecked = newestVid
                 db.session.add(amateur)
                 db.session.commit()            
