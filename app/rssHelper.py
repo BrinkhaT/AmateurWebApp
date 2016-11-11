@@ -82,9 +82,12 @@ class mdhItem:
 def loadAndTweetPPPVids():
     app.logger.info("loadAndTweetPPPVids: Start")
     acc = db.session.query(models.TwitterAccount).filter(models.TwitterAccount.id == 2).first()
+    accAllFeeds = db.session.query(models.TwitterAccount).filter(models.TwitterAccount.id == 3).first()
     if acc:
         wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
             accessSecret=acc.twAccessSecret)
+        wrapperAll = twitter.TwitterHelper(consKey=accAllFeeds.twConsKey, consSecret=accAllFeeds.twConsSecret, 
+                                            accessToken=accAllFeeds.twAccessToken, accessSecret=accAllFeeds.twAccessSecret)
         
         amateurSet = db.session.query(models.Amateur).filter(models.Amateur.pmId.isnot(None)).all()
         for amateur in amateurSet:
@@ -105,6 +108,9 @@ def loadAndTweetPPPVids():
                             newestVid = i.vidPubDate
                             publishNewVid(wrapper, i.vidLink, i.vidImg, i.pppUser, 'loadAndTweetPPPVids')
                             counter = counter + 1
+                            
+                            if wrapperAll:
+                                publishNewVid(wrapper, i.vidLink, i.vidImg, i.pppUser, 'loadAndTweetPPPVids_ALL')
 
                 amateur.pmLastChecked = newestVid
                 db.session.add(amateur)
@@ -155,6 +161,9 @@ class pppItem:
         
         pubDateStr = str(i['pubDate'])
         self.vidPubDate = datetime.strptime(pubDateStr[:-6], '%a, %d %b %Y %H:%M:%S')
+        
+        def __repr__(self):
+            return '<pppItem %s: %s (%s)>' % (self.pppUser, self.vidTitel, self.vidPubDate)
 
 def getDataFromRssFeed(url):
     try:
