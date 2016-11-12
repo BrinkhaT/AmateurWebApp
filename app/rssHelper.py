@@ -74,7 +74,15 @@ class mdhItem:
         self.mdhUser = i['u_nick']
         self.mdhId = i['u_id']
         self.vidLink = i['link']
+        
         self.desc = i['description']
+        self.desc = ' '.join(self.desc.split())
+        
+        p = re.compile('^.*\>(.+)$')
+        m = p.match(self.desc)
+        
+        if m:
+            self.desc = m.group(1)
         
         imgSmall = i['video_img']
         self.vidImg = imgSmall.replace('.jpg', '_sc_orig.jpg')
