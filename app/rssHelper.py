@@ -23,7 +23,8 @@ def loadAndSaveMdhVids():
         wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
             accessSecret=acc.twAccessSecret)
         
-        wrapperAll = twitter.TwitterHelper(consKey=accAllFeeds.twConsKey, consSecret=accAllFeeds.twConsSecret, 
+        if accAllFeeds:
+            wrapperAll = twitter.TwitterHelper(consKey=accAllFeeds.twConsKey, consSecret=accAllFeeds.twConsSecret, 
                                             accessToken=accAllFeeds.twAccessToken, accessSecret=accAllFeeds.twAccessSecret)
         
         rssSet = db.session.query(models.RssFeed).filter(models.RssFeed.function == 'mdhNewVids').all()
@@ -41,6 +42,10 @@ def loadAndSaveMdhVids():
                         publishNewVid(wrapper, i.vidLink, i.vidImg, i.mdhUser, 'loadAndSaveMdhVids')
                     if wrapperAll:
                         publishNewVid(wrapperAll, i.vidLink, i.vidImg, i.mdhUser, 'loadAndSaveMdhVids_ALL')
+                    
+                    rssEntry = models.RssItem(title=i.vidTitel, desc=i.desc, link=i.vidLink, 
+                                              pubDate=i.vidPubDate, pic=i.vidImg, amateur=i.mdhUser)
+                    db.session.add(rssEntry)
                         
             app.logger.info('loadAndSaveMdhVids: im Feed enthaltene User: %s' % (', '.join(newVids)))
             rss.lastChecked = newestVid
@@ -69,6 +74,7 @@ class mdhItem:
         self.mdhUser = i['u_nick']
         self.mdhId = i['u_id']
         self.vidLink = i['link']
+        self.desc = i['description']
         
         imgSmall = i['video_img']
         self.vidImg = imgSmall.replace('.jpg', '_sc_orig.jpg')
@@ -86,7 +92,9 @@ def loadAndTweetPPPVids():
     if acc:
         wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
             accessSecret=acc.twAccessSecret)
-        wrapperAll = twitter.TwitterHelper(consKey=accAllFeeds.twConsKey, consSecret=accAllFeeds.twConsSecret, 
+        
+        if accAllFeeds:
+            wrapperAll = twitter.TwitterHelper(consKey=accAllFeeds.twConsKey, consSecret=accAllFeeds.twConsSecret, 
                                             accessToken=accAllFeeds.twAccessToken, accessSecret=accAllFeeds.twAccessSecret)
         
         amateurSet = db.session.query(models.Amateur).filter(models.Amateur.pmId.isnot(None)).all()
@@ -139,10 +147,10 @@ class pppItem:
         
         self.vidImg = None
         
-        desc = i['description']
-        desc = ' '.join(desc.split())
+        self.desc = i['description']
+        self.desc = ' '.join(self.desc.split())
         p = re.compile('^.*img src=\"(.*)\" width.*$')
-        m = p.match(desc)
+        m = p.match(self.desc)
         
         if m:
             self.vidImg = m.group(1)
@@ -162,8 +170,90 @@ class pppItem:
         pubDateStr = str(i['pubDate'])
         self.vidPubDate = datetime.strptime(pubDateStr[:-6], '%a, %d %b %Y %H:%M:%S')
         
-        def __repr__(self):
-            return '<pppItem %s: %s (%s)>' % (self.pppUser, self.vidTitel, self.vidPubDate)
+    def __repr__(self):
+        return '<pppItem %s: %s (%s)>' % (self.pppUser, self.vidTitel, self.vidPubDate)
+
+def loadAndSaveVxVids():
+    app.logger.info("loadAndSaveVxVids: Start")
+    acc = db.session.query(models.TwitterAccount).filter(models.TwitterAccount.id == 3).first()
+    if acc:
+        wrapper = twitter.TwitterHelper(consKey=acc.twConsKey, consSecret=acc.twConsSecret, accessToken=acc.twAccessToken, 
+            accessSecret=acc.twAccessSecret)
+        
+        rssSet = db.session.query(models.RssFeed).filter(models.RssFeed.function == 'vxNewVids').all()
+        for rss in rssSet:
+            lastChecked = rss.lastChecked
+            newestVid = lastChecked
+            
+            for i in getVxItems(rss.feedUrl):
+                if not lastChecked or i.vidPubDate > lastChecked:
+                    newestVid = i.vidPubDate
+                    publishNewVid(wrapper, i.vidLink, i.vidImg, i.vxUser, 'loadAndSaveVxVids')
+                    
+                    rssEntry = models.RssItem(title=i.vidTitel, desc=i.desc, link=i.vidLink, 
+                                              pubDate=i.vidPubDate, pic=i.vidImg, amateur=i.vxUser)
+                    db.session.add(rssEntry)
+                        
+            rss.lastChecked = newestVid
+            db.session.add(rss)
+            db.session.commit()
+            
+    app.logger.info("loadAndSaveVxVids: Ende")
+
+def getVxItems(url):
+    items = []
+    data = getDataFromRssFeed(url)
+    
+    if data:
+        for i in data['rss']['channel']['item']:
+            i = vxItem(i)
+            items.append(i)
+            
+    items = sorted(items, key=attrgetter('vidPubDate'))
+    
+    return items
+
+class vxItem:
+    def __init__(self, i):
+        self.vidTitel = i['title']
+        self.vxUser = None
+        self.vxId = None
+        self.vidLink = i['guid']
+        
+        p = re.compile('^.*-{1}(.*)-{1}(\d*)\.html.*$')
+        m = p.match(self.vidLink)
+        
+        if m:
+            self.vxUser = m.group(1)
+            self.vxId = m.group(2)
+        
+        self.desc = i['description']
+        self.desc = ' '.join(self.desc.split())
+        
+        p = re.compile('^.*\>(.+)$')
+        m = p.match(self.desc)
+        
+        if m:
+            self.desc = m.group(1)
+        
+        self.vidImg = i['image']['url']
+        
+        p = re.compile('^(.*)(_240_180_)(.*)$')
+        m = p.match(self.vidImg)
+        
+        if m:
+            self.vidImg = m.group(1) + '_1280_720_' + m.group(3)
+        else:
+            p = re.compile('^(.*)(\/16_9\/large\/)(.*)$')
+            m = p.match(self.vidImg)
+            
+            if m:
+                self.vidImg = m.group(1) + '/original/' + m.group(3)
+
+        self.vidPubDate = datetime.strptime(i['pubDate'], '%Y-%m-%d %H:%M:%S')
+        
+    def __repr__(self):
+        return '<vxItem %s: %s (%s)>' % (self.pppUser, self.vidTitel, self.vidPubDate)
 
 def getDataFromRssFeed(url):
     try:

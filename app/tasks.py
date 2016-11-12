@@ -23,6 +23,7 @@ def jobsEveryHour():
 	app.logger.info("jobsEveryHour: naechster Start = " + repr(nextStart))	
 	
 	rssHelper.loadAndTweetPPPVids()
+	rssHelper.loadAndSaveVxVids()
 	checkFollowerForUpdates()
 	
 	app.logger.info("jobsEveryHour: Ende")

@@ -49,6 +49,16 @@ class TwitterAccount(db.Model):
     def __repr__(self):
         return '<TwitterAccount %r (%r)>' % (self.twName, self.id)
 
+class RssItem(db.Model):
+    __tablename__ = 'rss_entries'
+    id = db.Column(db.Integer, primary_key=True)
+    amateur = db.Column(db.String(150))
+    title = db.Column(db.String(150))
+    desc = db.Column(db.Text)
+    link = db.Column(db.String(150))
+    pic = db.Column(db.String(150))
+    pubDate = db.Column(db.DateTime)
+
 class RssFeed(db.Model):
     __tablename__ = 'rss_feeds'
     id = db.Column(db.Integer, primary_key=True)

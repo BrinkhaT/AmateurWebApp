@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, jsonify
+from flask import render_template, flash, redirect, url_for, jsonify, make_response
 import requests
 
 from app import app, db, models, tasks, AmateurHelper, rssHelper
@@ -128,6 +128,13 @@ def showLog():
 	logFile = reversed(open(pathLogFile).readlines())
 
 	return render_template('showLog.html', logFile=logFile)
+
+@app.route('/rss')
+def showRssFeed():
+	rssEntries = db.session.query(models.RssItem).order_by(models.RssItem.pubDate.desc()).limit(30).all()
+	resp = make_response(render_template('rss.html', rssEntries=rssEntries))
+	resp.headers['Content-type'] = 'text/xml; charset=utf-8'
+	return resp
 	
 # Routen fuer das Starten der Jobs
 @app.route('/jobs')

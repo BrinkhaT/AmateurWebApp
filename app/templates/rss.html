@@ -1,0 +1,30 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+	<channel>
+		<description>Meine kleine Sammlung</description>
+		<title>Meine Kleine Sammlung/</title>
+		<generator>BrinkhaT</generator>
+		<link>http://www.instagram.com/deutsche.amateure</link>
+		{% for i in rssEntries %}
+		<item>
+			<title>
+				{{ i.amateur }} - {{ i.title }}
+			</title>
+			<description>
+				{{ i.desc }}
+			</description>
+			<link>
+				{{ i.link }}
+			</link>
+			<guid>
+				{{ i.id }}
+			</guid>
+			<pubDate>
+				{{ i.pubDate.strftime('%a, %d %b %Y %H:%M:%S %z') }}
+			</pubDate>
+			<pic>
+				{{ i.pic }}
+			</pic>
+		</item>
+		{% endfor %}
+	</channel>
+</rss>
